@@ -265,6 +265,21 @@
       if(opt.addBtnSelector) this.addNewListItemListener($(opt.addBtnSelector));
       else this.addNewListItemListener(this.el.find(opt.addBtnClass.dot()));
     },
+    addNewListItem: function(data) {
+      var _this = this,
+          opt   = this.options,
+          data = data || {},
+          list = _this.el.find(opt.listClass.dot()).first(),
+          item = _this.createNewListItem(data).css('display', 'none');
+
+      list.prepend(item);
+      item.fadeIn(opt.newItemFadeIn);
+
+      // Call item addition event listeners
+      opt.onItemAdded.forEach(function(cb, i) {
+        cb(item);
+      });
+    },
     /**
      * @dev-since 0.13.29
      * @version-control +0.1.0 default add button removed
@@ -275,15 +290,7 @@
       var _this = this,
           opt   = this.options;
       addBtn.on('click', function(e) {
-        var list = _this.el.find(opt.listClass.dot()).first(),
-            item = _this.createNewListItem().css('display', 'none');
-        list.prepend(item);
-        item.fadeIn(opt.newItemFadeIn);
-
-        // Call item addition event listeners
-        opt.onItemAdded.forEach(function(cb, i) {
-          cb(item, e);
-        });
+        _this.addNewListItem();
       });
 
       // Call init event listeners
@@ -1345,6 +1352,17 @@
       var opt       = this._plugin.options,
           listNodes = this._plugin.el.find(opt.listNodeName);
       return listNodes;
+    },
+
+    /**
+     * @desc Adds new item with set params
+     * @param data
+     * @returns {PublicPlugin}
+     */
+    addListNode: function(data) {
+      var data = data || {};
+      this._plugin.addNewListItem(data);
+      return this;
     },
 
     /**
